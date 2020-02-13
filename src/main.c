@@ -67,6 +67,13 @@ static ModbusError goto_boot_loader( struct modbusSlave *status, ModbusParser *p
 	if (d->magic_code == 0x12345678)
 	{
 	    LOG_INF("goto_boot_loader");
+		
+   		__set_MSP(*(uint32_t*) FLASH_BASE);
+
+   		SCB->VTOR = FLASH_BASE; /* Vector Table Relocation in Internal FLASH. */
+
+   		asm volatile ("svc 0"); // go to boot svc call
+
 	}
 	return MODBUS_ERROR_PARSE; 
 }
