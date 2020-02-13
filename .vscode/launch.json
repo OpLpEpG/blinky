@@ -1,0 +1,28 @@
+{
+    // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+    // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+    // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}\\build\\zephyr\\zephyr.elf",
+            "name": "Debug (OpenOCD)",
+            "device": "STM32F103RB",
+            "configFiles": [
+                "d:\\IDEs\\eclipse\\OpenOCD\\scripts\\board\\stm32f103cb_blue_pill.cfg"
+            ]
+        },
+        {
+            "name": "Cortex Debug",
+            "cwd": "${workspaceRoot}",
+            "executable": "./bin/executable.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "jlink"
+        }
+    ]
+}
