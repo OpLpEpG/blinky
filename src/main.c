@@ -67,7 +67,7 @@ static ModbusError goto_boot_loader( struct modbusSlave *status, ModbusParser *p
 	if (d->magic_code == 0x12345678)
 	{
 	    LOG_INF("goto_boot_loader");
-		
+
    		__set_MSP(*(uint32_t*) FLASH_BASE);
 
    		SCB->VTOR = FLASH_BASE; /* Vector Table Relocation in Internal FLASH. */
@@ -78,9 +78,17 @@ static ModbusError goto_boot_loader( struct modbusSlave *status, ModbusParser *p
 	return MODBUS_ERROR_PARSE; 
 }
 
-static ModbusSlaveUserFunction msuf[1] =
+static ModbusError in_program( struct modbusSlave *status, ModbusParser *parser )
 {
-	{100, goto_boot_loader}
+	status->
+	return MODBUS_ERROR_OK; 
+}
+
+
+static ModbusSlaveUserFunction msuf[2] =
+{
+	{100, goto_boot_loader},
+	{102, in_program}
 };
 
 static void uart3_dma_fkt_rx(u8_t *pD, size_t len)
@@ -116,7 +124,7 @@ static void init_drivers(void){
 	slave.coils = coils;
 	slave.coilCount = 16;
 	slave.userFunctions = msuf;
-	slave.userFunctionCount = 1; 	
+	slave.userFunctionCount = 2; 	
 	modbusSlaveInit( &slave );
 }
 
