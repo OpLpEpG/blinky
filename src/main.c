@@ -19,14 +19,20 @@
 #include <sys/printk.h>
 #include <drivers/dma.h>
 
+#include <kernel.h>
+#include <power/reboot.h>
+#include <drivers/timer/system_timer.h>
+
 #include <console/console.h>
 #include <sys/ring_buffer.h>
 #include "usart3_dma1_ch2_3.h"
 #include <logging/log.h>
 
+extern void sys_clock_disable(void);
+
 LOG_MODULE_REGISTER(MAIN, LOG_LEVEL_DBG);
 
-
+#define svc(code) __asm__ volatile ("svc %[immediate]"::[immediate] "I" (code))
 
 #define LED_PORT	DT_ALIAS_LED0_GPIOS_CONTROLLER
 #define LED		DT_ALIAS_LED0_GPIOS_PIN
@@ -66,22 +72,23 @@ static ModbusError goto_boot_loader( struct modbusSlave *status, ModbusParser *p
 
 	if (d->magic_code == 0x12345678)
 	{
-	    LOG_INF("goto_boot_loader");
+		uart->init(false, NULL);		
 
-   		__set_MSP(*(uint32_t*) FLASH_BASE);
-
+		(void)irq_lock();
+		sys_clock_disable();
+   		__set_MSP(*(uint32_t*) FLASH_BASE);		   
    		SCB->VTOR = FLASH_BASE; /* Vector Table Relocation in Internal FLASH. */
-
-   		asm volatile ("svc 0"); // go to boot svc call
-
+   		svc(0);  // go to boot svc call
 	}
 	return MODBUS_ERROR_PARSE; 
 }
 
 static ModbusError in_program( struct modbusSlave *status, ModbusParser *parser )
 {
-	status->
-	return MODBUS_ERROR_OK; 
+    LOG_INF("in_program %x", parser->base.address);
+	memcpy(status->response.frame, status->request.frame, status->request.length);
+	status->response.length = status->request.length;
+	return  MODBUS_OK;
 }
 
 
