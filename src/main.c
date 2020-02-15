@@ -114,7 +114,7 @@ static void init_drivers(void){
 	/* Set LED pin as output */	
 	gpio = device_get_binding(LED_PORT);	
 	gpio_pin_configure(gpio, LED, GPIO_DIR_OUT);
-	gpio_pin_write(gpio, LED, 0);
+	gpio_pin_set(gpio, LED, 0);
 
     // uart3 dma1 tx ch2 rx ch3
     struct device *uartDM;
@@ -161,10 +161,10 @@ void modbus(void)
 
 		regs[0]++;
 
-  		gpio_pin_write(gpio, LED, 1);
+  		gpio_pin_set(gpio, LED, 1);
 		uart3_dma_error_t r = uart->writeBuffer(slave.response.frame, slave.response.length, 1000);	
-		k_sleep(5);	
-  		gpio_pin_write(gpio, LED, 0);
+		// k_sleep(5);	
+  		gpio_pin_set(gpio, LED, 0);
 		if(r){
 			resetUart();
 	    	LOG_ERR("ModbusError %d", r);

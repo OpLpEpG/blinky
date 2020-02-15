@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "platformio-debug",
+            "request": "launch",
+            "name": "PIO Debug",
+            "toolchainBinDir": "c:\\gnu_arm_embedded\\bin",
+            "executable": "${workspaceRoot}\\build\\zephyr\\zephyr.elf",
+            "svdPath": "C:/Users/oleg/.platformio/platforms/ststm32/misc/svd/STM32F103xx.svd",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "openocd",
