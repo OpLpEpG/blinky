@@ -113,7 +113,7 @@ static void uart3_dma_fkt_rx(u8_t *pD, size_t len)
 static void init_drivers(void){
 	/* Set LED pin as output */	
 	gpio = device_get_binding(LED_PORT);	
-	gpio_pin_configure(gpio, LED, GPIO_DIR_OUT);
+	gpio_pin_configure(gpio, LED, GPIO_OUTPUT);
 	gpio_pin_set(gpio, LED, 0);
 
     // uart3 dma1 tx ch2 rx ch3
