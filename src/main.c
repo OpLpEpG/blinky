@@ -3,9 +3,15 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  * 
- * debug UART B6 - TxD => RxD	orange
- * 			  B7 - RxD <= TxD	blue
+ * 
+ * west build -t guiconfig
+ * 
+ * debug UART1 A9 - TxD => RxD	orange
+ * 			   A10 - RxD <= TxD	blue
  *            GND  	  <=> GND	white
+ * 
+ * I2C1 =    B6 SCL
+ * 			 B7 SDA
  */
 
 #include <zephyr.h>
@@ -48,11 +54,6 @@ uint16_t regs[32] = { 0 };
 //For storing exit codes
 uint8_t sec, mec;
 
-//static void uart_irq_callback(struct device *port)
-//{
-//
-//}
-
 struct device *gpio;
 uart3_dma_api_t const *uart;
 struct k_sem rxReady;
@@ -91,7 +92,6 @@ static ModbusError in_program( struct modbusSlave *status, ModbusParser *parser 
 	return  MODBUS_OK;
 }
 
-
 static ModbusSlaveUserFunction msuf[2] =
 {
 	{100, goto_boot_loader},
@@ -113,7 +113,9 @@ static void uart3_dma_fkt_rx(u8_t *pD, size_t len)
 static void init_drivers(void){
 	/* Set LED pin as output */	
 	gpio = device_get_binding(LED_PORT);	
-	gpio_pin_configure(gpio, LED, GPIO_DIR_OUT);
+
+	gpio_pin_configure(gpio, LED, GPIO_OUTPUT);
+
 	gpio_pin_set(gpio, LED, 0);
 
     // uart3 dma1 tx ch2 rx ch3
@@ -155,15 +157,14 @@ void modbus(void)
 			resetUart();
 		    LOG_ERR("k_sem_take ERROR");
 		}
+		regs[0]++;
+		// TODO: any works in modbus callbucks
 		ModbusError err = modbusParseRequest(&slave);
 	    LOG_INF("modbusParseRequest: %d", err);
 		LOG_HEXDUMP_DBG(slave.response.frame, slave.response.length, "slave.response.frame");
-
-		regs[0]++;
-
+		// send modbusRequest
   		gpio_pin_set(gpio, LED, 1);
 		uart3_dma_error_t r = uart->writeBuffer(slave.response.frame, slave.response.length, 1000);	
-		// k_sleep(5);	
   		gpio_pin_set(gpio, LED, 0);
 		if(r){
 			resetUart();
