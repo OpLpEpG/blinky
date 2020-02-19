@@ -1,0 +1,14 @@
+# General configuration options
+
+# Copyright (c) 2014-2015 Wind River Systems, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "Zephyr Kernel Configuration + Umdom"
+
+menu "Umdom Zephyr modules"
+
+source "${ZEPHYR_UMDOM}/Kconfig"
+
+endmenu
+
+source "$(ZEPHYR_BASE)/Kconfig.zephyr"
