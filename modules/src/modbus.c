@@ -25,10 +25,6 @@ static uart3_dma_api_t const *uart;
 static struct k_sem rxReady;
 static ModbusSlave slave;
 
-//Registers and coils
-// static uint8_t coils[2] = { 0 };
-// static uint16_t regs[32] = { 0 };
-
 typedef	struct __attribute__( ( __packed__ ) )
 	{
 		uint8_t address;
@@ -129,7 +125,7 @@ static void modbus(void)
 		// regs[0]++;
 		// TODO: any works in modbus callbacks
 		ModbusError err = modbusParseRequest(&slave);
-	    LOG_INF("modbusParseRequest: %d", err);
+	    if (err) LOG_ERR("modbusParseRequest: %d", err);
 		if (slave.response.length > 0)
 		{
 			// send modbusRequest

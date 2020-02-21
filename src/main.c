@@ -4,7 +4,7 @@
  * debug UART1 A9 - TxD => RxD	orange
  * 			   A10 - RxD <= TxD	blue
  *            GND  	  <=> GND	white
- * 
+ *  
  * I2C1 =    B6 SCL
  * 			 B7 SDA
  */
@@ -14,8 +14,9 @@
 #include <lightmodbus.h>
 #include <slave.h>
 #include <console/console.h>
-#include <logging/log.h>
+#include <string.h>
 #include <modbus.h>
+#include <logging/log.h>
 LOG_MODULE_REGISTER(MAIN, LOG_LEVEL_DBG);
 
 #define CONST_BEGIN 0x08000C00
@@ -38,7 +39,7 @@ static uint16_t callbackFunction(ModbusRegisterQuery query, ModbusDataType datat
     //All can be read
     if ( query == MODBUS_REGQ_R_CHECK ) return 1;
     //writeacc determines if holding register can be written
-    if ( query == MODBUS_REGQ_W_CHECK ) return writeacc[index];
+    if ( query == MODBUS_REGQ_W_CHECK ) return !writeacc[index];
     //Read
     if ( query == MODBUS_REGQ_R )
     {
@@ -47,21 +48,27 @@ static uint16_t callbackFunction(ModbusRegisterQuery query, ModbusDataType datat
     }
     //Write
     if ( query == MODBUS_REGQ_W && datatype == MODBUS_HOLDING_REGISTER )
-        iregs[index] = value;
+        regs[index] = value;
     return 0;
 }
 
 void main(void)       
 {
 	console_getline_init();
-	modbus_init(umdom_const->address, callbackFunction,5,0,5,0);
+	modbus_init(umdom_const->address, callbackFunction,sizeof(regs),sizeof(iregs),5,0);
 
-    LOG_INF("UART3 DMA init_drivers()");    
+    LOG_INF("BEGIN CONSOLE =>");    
 	while (1) {
 		char *s = console_getline();
-	    
-		printk("line: %s\n", s);
-		printk("last char was: 0x%x\n", s[strlen(s) - 1]);
+        if (strcmp(s, "GA") == 0) printk("[%s] Gett Address Device: %d\n", s, umdom_const->address);
+        else if (strcmp(s, "R") == 0) LOG_HEXDUMP_DBG(regs, sizeof(regs), "[R] regs");
+        else if (strcmp(s, "IR") == 0) LOG_HEXDUMP_DBG(iregs, sizeof(iregs), "[IR] iregs");
+        else
+        {
+	        printk("unknown command: %s\n", s);
+	    	//printk("last char was: 0x%x\n", s[strlen(s) - 1]);
+        }
+        
 		
 	}
 }

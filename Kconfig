@@ -5,7 +5,7 @@
 
 mainmenu "Zephyr Kernel Configuration + Umdom"
 
-#comment "Umdom Zephyr modules config"
+comment "Umdom Zephyr modules config"
 menu "Umdom Zephyr: modules"
 source "${ZEPHYR_UMDOM}/Kconfig"
 endmenu
@@ -16,3 +16,4 @@ endmenu
 
 comment "Zephyr Kernel Configuration"
 source "$(ZEPHYR_BASE)/Kconfig.zephyr"
+

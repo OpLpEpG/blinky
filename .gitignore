@@ -33,3 +33,5 @@
 
 build/
 .vscode/
+default.config
+default.config.old
