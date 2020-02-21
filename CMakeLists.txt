@@ -11,7 +11,9 @@ include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 
 project(blinky)
 
-FILE(GLOB app_sources src/*.c)
+include_directories(modules/include)
+
+FILE(GLOB app_sources src/*.c modules/src/*.c)
 
 target_sources(app PRIVATE ${app_sources})
 
