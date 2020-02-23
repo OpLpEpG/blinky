@@ -67,8 +67,6 @@ void main(void)
         {
 	        printk("unknown command: %s\n", s);
 	    	//printk("last char was: 0x%x\n", s[strlen(s) - 1]);
-        }
-        
-		
+        }		
 	}
 }

@@ -5,7 +5,8 @@ message("UMDOM: Запуск сборки.")
 
 set(ZEPHYR_EXTRA_MODULES 
                         $ENV{ZEPHYR_UMDOM}/modbus
-                        $ENV{ZEPHYR_UMDOM}/stm32_uart3_dma1_ch2_3)
+                        $ENV{ZEPHYR_UMDOM}/stm32_uart3_dma1_ch2_3
+                        $ENV{ZEPHYR_UMDOM}/am2320)
 
 include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 
