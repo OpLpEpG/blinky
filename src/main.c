@@ -11,6 +11,12 @@
 
 #include <zephyr.h>
 #include <device.h>
+#include <drivers/sensor.h>
+#include <drivers/i2c.h>
+#include <stm32f1xx_ll_i2c.h>
+// #include <am2320.h>
+
+
 #include <lightmodbus.h>
 #include <slave.h>
 #include <console/console.h>
@@ -52,17 +58,21 @@ static uint16_t callbackFunction(ModbusRegisterQuery query, ModbusDataType datat
     return 0;
 }
 
+static u8_t flag_AM2320;
+
 void main(void)       
 {
+
 	console_getline_init();
-	modbus_init(umdom_const->address, callbackFunction,sizeof(regs),sizeof(iregs),5,0);
+	modbus_init(umdom_const->address & 0x7F, callbackFunction,sizeof(regs),sizeof(iregs),5,0);
 
     LOG_INF("BEGIN CONSOLE =>");    
 	while (1) {
 		char *s = console_getline();
-        if (strcmp(s, "GA") == 0) printk("[%s] Gett Address Device: %d\n", s, umdom_const->address);
+        if (strcmp(s, "GA") == 0) printk("[%s] Gett Address Device: %d\n", s, umdom_const->address & 0x7F);
         else if (strcmp(s, "R") == 0) LOG_HEXDUMP_DBG(regs, sizeof(regs), "[R] regs");
         else if (strcmp(s, "IR") == 0) LOG_HEXDUMP_DBG(iregs, sizeof(iregs), "[IR] iregs");
+        else if (strcmp(s, "H") == 0) flag_AM2320 = (flag_AM2320+1) % 2;
         else
         {
 	        printk("unknown command: %s\n", s);
@@ -70,3 +80,25 @@ void main(void)
         }		
 	}
 }
+
+static void sensor(void) 
+{
+    struct device *am2320 = device_get_binding("AM2320");
+	__ASSERT(am2320, "invalid dev am2320");
+   	
+	while (1)
+	{   
+        if (flag_AM2320)
+        {
+            struct sensor_value t,h;
+            sensor_sample_fetch(am2320);
+            sensor_channel_get(am2320, SENSOR_CHAN_AMBIENT_TEMP, &t);
+            sensor_channel_get(am2320, SENSOR_CHAN_HUMIDITY, &h);
+            printk("\033[1mSENSOR:\033[0m temp:\033[32m%d.%d\033[0m hum:\033[1;32m%d.%d\033[0m\n", t.val1, t.val2, h.val1, h.val2);
+            // 
+        }
+        k_sleep(2000);
+	}	
+}
+K_THREAD_DEFINE(sensor_th, 1024, sensor, NULL, NULL, NULL, 7, K_ESSENTIAL, K_NO_WAIT);
+
