@@ -58,7 +58,7 @@ static uint16_t callbackFunction(ModbusRegisterQuery query, ModbusDataType datat
     return 0;
 }
 
-static u8_t flag_AM2320;
+static u8_t flag_AM2320, flag_BME280, flag_BH1750;
 
 void main(void)       
 {
@@ -73,6 +73,8 @@ void main(void)
         else if (strcmp(s, "R") == 0) LOG_HEXDUMP_DBG(regs, sizeof(regs), "[R] regs");
         else if (strcmp(s, "IR") == 0) LOG_HEXDUMP_DBG(iregs, sizeof(iregs), "[IR] iregs");
         else if (strcmp(s, "H") == 0) flag_AM2320 = (flag_AM2320+1) % 2;
+        else if (strcmp(s, "B") == 0) flag_BME280 = (flag_BME280+1) % 2;
+        else if (strcmp(s, "L") == 0) flag_BH1750 = (flag_BH1750+1) % 2;
         else
         {
 	        printk("unknown command: %s\n", s);
@@ -83,18 +85,40 @@ void main(void)
 
 static void sensor(void) 
 {
+    struct device *bh1750 = device_get_binding("BH1750");
+	if (!bh1750) LOG_ERR("invalid dev BH1750");
     struct device *am2320 = device_get_binding("AM2320");
-	__ASSERT(am2320, "invalid dev am2320");
+	if (!am2320) LOG_ERR("invalid dev am2320");
+    struct device *bme280 = device_get_binding("BME280");
+	if(!bme280) LOG_ERR("invalid dev bme280");
    	
 	while (1)
 	{   
-        if (flag_AM2320)
+        if (flag_AM2320 && am2320)
         {
             struct sensor_value t,h;
             sensor_sample_fetch(am2320);
             sensor_channel_get(am2320, SENSOR_CHAN_AMBIENT_TEMP, &t);
             sensor_channel_get(am2320, SENSOR_CHAN_HUMIDITY, &h);
-            printk("\033[1mSENSOR:\033[0m temp:\033[32m%d.%d\033[0m hum:\033[1;32m%d.%d\033[0m\n", t.val1, t.val2, h.val1, h.val2);
+            printk("\033[1mSENSOR am2320:\033[0m temp:\033[32m%d.%d\033[0m hum:\033[1;32m%d.%d\033[0m\n", t.val1, t.val2, h.val1, h.val2);
+            // 
+        }
+        if (flag_BH1750 && bh1750)
+        {
+            struct sensor_value l;
+            sensor_sample_fetch(bh1750);
+            sensor_channel_get(bh1750, SENSOR_CHAN_LIGHT, &l);
+            printk("\033[1mSENSOR bh1750:\033[0m light:\033[1;32m%d.%d\033[0m lux\n", l.val1, l.val2);
+            // 
+        }
+        if (flag_BME280 && bme280)
+        {
+            struct sensor_value t,h, p;
+            sensor_sample_fetch(bme280);
+            sensor_channel_get(bme280, SENSOR_CHAN_AMBIENT_TEMP, &t);
+            sensor_channel_get(bme280, SENSOR_CHAN_HUMIDITY, &h);
+            sensor_channel_get(bme280, SENSOR_CHAN_PRESS, &p);
+            printk("\033[1mSENSOR bme280:\033[0m temp:\033[32m%d.%d\033[0m hum:\033[1;32m%d.%d\033[0m pre:\033[1;32m%d.%d\033[0m\n", t.val1, t.val2, h.val1, h.val2, p.val1, p.val2);
             // 
         }
         k_sleep(2000);

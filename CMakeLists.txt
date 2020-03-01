@@ -6,7 +6,14 @@ message("UMDOM: Запуск сборки.")
 set(ZEPHYR_EXTRA_MODULES 
                         $ENV{ZEPHYR_UMDOM}/modbus
                         $ENV{ZEPHYR_UMDOM}/stm32_uart3_dma1_ch2_3
-                        $ENV{ZEPHYR_UMDOM}/am2320)
+                        $ENV{ZEPHYR_UMDOM}/am2320
+                        $ENV{ZEPHYR_UMDOM}/bh1750)
+# добавляем вручную dtr для BME280      
+# TODO: изучить dte overlay и создать для проекта
+add_definitions(-DDT_BOSCH_BME280_BUS_I2C 
+                -DDT_INST_0_BOSCH_BME280_BUS_NAME="I2C_1"
+                -DDT_INST_0_BOSCH_BME280_BASE_ADDRESS=0x77
+                -DDT_INST_0_BOSCH_BME280_LABEL="BME280")                        
 
 include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 
