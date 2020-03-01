@@ -7,7 +7,8 @@ set(ZEPHYR_EXTRA_MODULES
                         $ENV{ZEPHYR_UMDOM}/modbus
                         $ENV{ZEPHYR_UMDOM}/stm32_uart3_dma1_ch2_3
                         $ENV{ZEPHYR_UMDOM}/am2320
-                        $ENV{ZEPHYR_UMDOM}/bh1750)
+                        $ENV{ZEPHYR_UMDOM}/bh1750
+                        $ENV{ZEPHYR_UMDOM}/RTC)
 # добавляем вручную dtr для BME280      
 # TODO: изучить dte overlay и создать для проекта
 add_definitions(-DDT_BOSCH_BME280_BUS_I2C 

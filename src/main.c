@@ -12,8 +12,8 @@
 #include <zephyr.h>
 #include <device.h>
 #include <drivers/sensor.h>
-#include <drivers/i2c.h>
-#include <stm32f1xx_ll_i2c.h>
+// #include <drivers/i2c.h>
+// #include <stm32f1xx_ll_i2c.h>
 // #include <am2320.h>
 
 
