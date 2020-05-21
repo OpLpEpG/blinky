@@ -141,5 +141,5 @@ static void modbus(void)
 		} 
 	}	
 }
-K_THREAD_DEFINE(modbus_th, 1024, modbus, NULL, NULL, NULL, 7, K_ESSENTIAL, K_NO_WAIT);
+K_THREAD_DEFINE(modbus_th,1024, modbus, NULL, NULL, NULL, 7, K_ESSENTIAL, K_NO_WAIT);
 #endif
