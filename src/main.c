@@ -215,8 +215,8 @@ static void sensor(void)
             printk("\033[1mSENSOR bme280:\033[0m temp:\033[32m%d.%06d\033[0m hum:\033[1;32m%d.%06d\033[0m pre:\033[1;32m%d\033[0m\n", t.val1, t.val2, h.val1, h.val2, pr);
             // 
         }
-        k_sleep(2000);
+        k_msleep(2000);
 	}	
 }
-K_THREAD_DEFINE(sensor_th, 1024, sensor, NULL, NULL, NULL, 7, K_ESSENTIAL, K_NO_WAIT);
+K_THREAD_DEFINE(sensor_th, 1024, sensor, NULL, NULL, NULL, 7, K_ESSENTIAL, 0);
 
