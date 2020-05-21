@@ -6,7 +6,7 @@
 config DEV_MODBUS
     bool "modbus"
     default y
-    depends on LIGHTMODBUS_SLAVE_BASE && UART3_DMA
+    depends on LIGHTMODBUS_SLAVE_BASE && (UART3_DMA || UART2_DMA)
 
 if DEV_MODBUS 
 
@@ -14,7 +14,7 @@ config DEV_MODBUS_TXE_GPIO_PORT
     string "port TXE modbus"
     default GPIOC
     help
-    CPIOA, CPIOB, CPIOC, CPIOD
+    GPIOA, GPIOB, GPIOC, GPIOD
 
 config DEV_MODBUS_TXE_GPIO_PIN
     int "port pin TXE modbus 0..15"
